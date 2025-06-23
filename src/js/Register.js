@@ -17,7 +17,7 @@ function Login() {
     const handleSubmit = async (e) => {
         e.preventDefault(); // Prevent default form submission
         try {
-            await axios.post("http://192.168.1.9:5000/register", {
+            await axios.post("http://192.168.1.7:5000/register", {
                 name,
                 password,
             });

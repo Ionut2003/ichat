@@ -21,7 +21,7 @@ function Login() {
         e.preventDefault(); // Prevent default form submission
         try {
             // Send a POST request to the backend login route with user credentials
-            const res = await axios.post("http://192.168.1.9:5000/login", {
+            const res = await axios.post("http://192.168.1.7:5000/login", {
                 name,
                 password,
             });

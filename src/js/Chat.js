@@ -4,7 +4,7 @@ import "../css/Chat.css"; // Import the CSS file for styling
 import axios from "axios"; // Import Axios for making HTTP requests
 import io from "socket.io-client";
 
-const socket = io("http://192.168.1.9:5000"); // Adjust the IP if needed
+const socket = io("http://192.168.1.7:5000"); // Adjust the IP if needed
 
 function Chat() {
     // State to store messages retrieved from the server
@@ -25,13 +25,14 @@ function Chat() {
     const fileInputRef = useRef(null); // Reference to the file input for image upload
     const imageMessageRef = useRef({}); // Reference to the image message for smooth scrolling
     const overlayRef = useRef(null); // Reference to the overlay element
+    const editTimeOutRef = useRef(null);
 
     // Fetch messages when the component mounts
     useEffect(() => {
         document.title = "iChat - Chat";
         // Function to fetch initial messages from the server
         const fetchMessages = async () => {
-            const res = await axios.get("http://192.168.1.9:5000/messages"); // Make a GET request to fetch messages
+            const res = await axios.get("http://192.168.1.7:5000/messages"); // Make a GET request to fetch messages
             setMessages(res.data); // Update the state with the fetched messages
         };
         fetchMessages(); // Call the function
@@ -80,7 +81,7 @@ function Chat() {
         if (newMessage.trim() === "") return;
 
         // Send the new message to the server
-        await axios.post("http://192.168.1.9:5000/messages", {
+        await axios.post("http://192.168.1.7:5000/messages", {
             text: newMessage,
             user: localStorage.getItem("username") || "Anonymous", // Use the logged-in username or default to "Anonymous"
         });
@@ -107,7 +108,7 @@ function Chat() {
                                 )
                             );
                             await axios.patch(
-                                `http://192.168.1.9:5000/messages/${message._id}`,
+                                `http://192.168.1.7:5000/messages/${message._id}`,
                                 {
                                     text: newMessage,
                                 }
@@ -161,7 +162,7 @@ function Chat() {
         try {
             // Send a delete request to the server
             await axios.delete(
-                `http://192.168.1.9:5000/messages/${message._id}`
+                `http://192.168.1.7:5000/messages/${message._id}`
             );
             setMessages(
                 (prevMessages) => prevMessages.filter((_, i) => i !== index) // Filter out the deleted message from the state
@@ -232,7 +233,20 @@ function Chat() {
                     ) : (
                         <p className="message-text">{message.text}</p>
                     )}
-                    <div className="display-edit" key={index}>
+                    <div
+                        className="display-edit"
+                        key={index}
+                        onMouseEnter={() => {
+                            clearTimeout(editTimeOutRef.current);
+                            editTimeOutRef.current = null;
+                        }}
+                        onMouseLeave={() => {
+                            editTimeOutRef.current = setTimeout(() => {
+                                displayEdit(index);
+                                editTimeOutRef.current = null;
+                            }, 500);
+                        }}
+                    >
                         <p
                             className="display-edit-item"
                             onClick={() => {
@@ -252,7 +266,15 @@ function Chat() {
                     </div>
                     <div
                         className="edit-message"
-                        onClick={() => displayEdit(index)}
+                        onMouseEnter={() => {
+                            displayEdit(index);
+                        }}
+                        onMouseLeave={() => {
+                            editTimeOutRef.current = setTimeout(() => {
+                                displayEdit(index);
+                                editTimeOutRef.current = null;
+                            }, 500);
+                        }}
                     >
                         <i className="fa fa-ellipsis-h"></i>
                     </div>

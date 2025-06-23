@@ -122,10 +122,6 @@
     transition: var(--general-transition);
 }
 
-.edit-message:hover {
-    border-radius: 50%;
-    background-color: #d8d8d837;
-}
 
 .display-edit {
     display: none;
@@ -143,6 +139,12 @@
     font-weight: lighter;
     transition: var(--general-transition);
 }
+
+.edit-message:hover {
+    border-radius: 50%;
+    background-color: #d8d8d837;
+}
+
 
 .display-edit-item:hover {
     background-color: #d8d8d837;
